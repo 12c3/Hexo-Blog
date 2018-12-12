@@ -9,7 +9,7 @@ date: 2018-12-11 16:39:25
 description:
 ---
 ##### 说明
-什么是Spring boot？这些网上各种说明都有，这里只说下个人自己的理解：严格来说它（以下代指Spring boot）不算是一个框架，它只能说是一款集成主流常用框架的新型开发模式。它的核心思想就是约定大于配置以求达到开箱即用的效果，所以说它最大的魅力就在于减少开发人员不必要的配置，达到开箱即用的快速开发状态。
+什么是Spring boot？这些网上各种说明都有，这里只说下个人自己的理解：严格来说Spring boot不算是一个框架，它只能说是一款集成主流常用框架的新型开发模式。Spring boot的核心理念就是约定大于配置，所以说它最大的魅力就在于减少开发人员不必要的配置，从而达到开箱即用的快速开发效果。
 
 ##### 快速开始
 [Spring boot](http://spring.io/projects/spring-boot)官网地址，找到Quick start点击下面的Spring Initializr进入demo下载页面
@@ -25,7 +25,7 @@ description:
 打开代码之后你会发现工程非常简单，如图总共才三个文件：  
 1.DemoApplication文件，是整个工程的启动配置类，由@SpringBootApplication注解标明使用，此注解的作用就是开启整个项目的配置文件，由@SpringBootConfiguration、@EnableAutoConfiguration、@ComponentScan三个注解组成，依次作用为初始化加载配置、开启自动配置、开启扫描配置。也可以单独使用这三个注解，两者效果是一样的，用@SpringBootApplication只是为了简化操作。  
 2.application.properties文件，这是整个工程的配置文件，它有自己最基本的默认配置（上面说的魅力所在），比如说端口号默认8080等，由于是基本demo工程没有其他配置，所以整个文件为空采用默认的基本配置。  
-3.pom.xml文件，用过maven的都知道这是maven项目的核心（我想现在java没用过maven的应该凤毛麟角），整个maven工程的依赖和配置全部在这个文件声明指定。
+3.pom.xml文件，maven的作用是依赖管理，而这个文件则是整个maven工程的依赖和配置声明，由此可见其重要性。
 ![Spring boot项目文件明细](http://image.12c3.com/Hexo-Blog/Spring-boot入门篇/Spring-boot项目文件.png)
 运行主程序main方法，至此一个基础java项目搭建完成。
 ##### 简单示例
@@ -51,7 +51,7 @@ description:
   </dependency>
 </dependencies>
 ```
-2.添加完jar依赖之后，这里简单说明下SPring boot建议代码结构示意图   
+2.添加完maven依赖之后，这里简单说明下SPring boot建议代码结构示意图   
 ```
 com
  +- example
@@ -68,7 +68,7 @@ com
         +- controller
         |   +- CustomerController.java
 ```
-* application 主程序入口-默认放在项目最上层
+* Application 主程序入口-默认放在项目最上层
 * domain 实体类和数据传输对象
 * service 业务实现代码
 * controller 接口控制器   
