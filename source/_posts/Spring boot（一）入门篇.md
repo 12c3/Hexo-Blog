@@ -123,4 +123,4 @@ server.port=10008
 ```
 ##### 结语
 经过一个简单的示例，大家都应该体验到Spring boot的魅力所在。但是有得必有失，当我们习惯这种模式时，同时也失去了一定学习和深入了解Spring Mvc机制的机会。  
-附：[Spring boot示例demo源码](http://file.12c3.com/Hexo-Blog/Spring%20boot（一）入门篇Demo源码.rar)
+附：[示例demo源码](http://file.12c3.com/Hexo-Blog/Spring-boot（一）入门篇demo源码.rar)
