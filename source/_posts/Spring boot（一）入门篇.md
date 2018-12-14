@@ -90,6 +90,7 @@ public class TestController {
         return "我的名字是："+name;
     }
 }
+
 ```
 4.运行示例程序 如图：
 ![示例运行图](http://image.12c3.com/Hexo-Blog/Spring-boot入门篇/示例运行图.png)
