@@ -1,15 +1,16 @@
 ---
-title: Spring boot（一）入门篇
+title: Spring boot（二）mybatis篇
 tags:
   - Spring boot
   - Spring boot入门
+  - mybatis
 categories: Spring boot
 abbrlink: c0321393
-date: 2018-12-11 16:39:25
+date: 2019-03-28 17:46:25
 description:
 ---
 ##### 说明
-什么是Spring boot？这些网上各种说明都有，这里只说下个人自己的理解：严格来说Spring boot不算是一个框架，它只能说是一款集成主流常用框架的新型开发模式。Spring boot的核心理念就是约定大于配置，所以说它最大的魅力就在于减少开发人员不必要的配置，从而达到开箱即用的快速开发效果。
+上文介绍Spring boot基本信息和简单示例，接下来我们进一步完善框架，这里选择目前主流的mybatis来做ORM框架管理数据库。
 
 ##### 快速开始
 [Spring boot](http://spring.io/projects/spring-boot)官网地址，找到Quick start点击下面的Spring Initializr进入demo下载页面
