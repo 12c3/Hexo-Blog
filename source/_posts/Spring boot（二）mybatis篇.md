@@ -5,102 +5,188 @@ tags:
   - Spring boot入门
   - mybatis
 categories: Spring boot
-abbrlink: c0321393
-date: 2019-03-28 17:46:25
+abbrlink: 51b216f9
+date: 2019-07-01 17:46:25
 description:
 ---
 ##### 说明
-上文介绍Spring boot基本信息和简单示例，接下来我们进一步完善框架，这里选择目前主流的mybatis来做ORM框架管理数据库。
+上文介绍Spring boot基本信息和简单示例，接下来我们进一步完善框架，这里选择目前主流的mybatis来做ORM框架管理数据库。   
+选择mybatis的优势：1.上手简单熟悉SQL语句即可 2.低耦合便于优化（SQL语句都统一处理，方便后期优化调整）
 
-##### 快速开始
-[Spring boot](http://spring.io/projects/spring-boot)官网地址，找到Quick start点击下面的Spring Initializr进入demo下载页面
-![Spring boot官网](http://image.12c3.com/Hexo-Blog/Spring-boot入门篇/Spring-boot官网.png)
-选择maven工程java语言最后选择自己想要的Spring boot版本（默认是最新稳定版）最后点击创建下载即可
-![Spring boot官网demo工程下载](http://image.12c3.com/Hexo-Blog/Spring-boot入门篇/Spring-boot下载demo工程.png)
-下载完成之后解压文件得到项目工程，这是一个最基本的Spring boot工程，这里用IDEA打开项目（maven工程直接选中pom.xml即可）当然也可以选择eclipse，这里就不细说工具区别了。  
-项目结构说明：除开src文件夹和pom.xml文件，其他都是些maven或者Git的说明文件，可以直接删除并不影响项目代码
-* src/main/java 代码主体主程序入口   
-* src/main/resources 资源文件与配置文件
-* src/main/test 测试主体程序入口，测试代码可以删除   
+##### 示例
+打开上文的示例demo代码，因为yml配置文件更具有层次性，出于代码可阅读性，我们这里把配置文件application.properties更换为application.yml类型，需要注意的是参数值前面需要加空格。   
+![yml文件示例图](http://image.12c3.com/Hexo-Blog/Spring-boot进阶篇-mybatis/yml文件示例图.png)
 
-打开代码之后你会发现工程非常简单，如图总共才三个文件：  
-1.DemoApplication文件，是整个工程的启动配置类，由@SpringBootApplication注解标明使用，此注解的作用就是开启整个项目的配置文件，由@SpringBootConfiguration、@EnableAutoConfiguration、@ComponentScan三个注解组成，依次作用为初始化加载配置、开启自动配置、开启扫描配置。也可以单独使用这三个注解，两者效果是一样的，用@SpringBootApplication只是为了简化操作。  
-2.application.properties文件，这是整个工程的配置文件，它有自己最基本的默认配置（上面说的魅力所在），比如说端口号默认8080等，由于是基本demo工程没有其他配置，所以整个文件为空采用默认的基本配置。  
-3.pom.xml文件，maven的作用是依赖管理，而这个文件则是整个maven工程的依赖和配置声明，由此可见其重要性。
-![Spring boot项目文件明细](http://image.12c3.com/Hexo-Blog/Spring-boot入门篇/Spring-boot项目文件.png)
-运行主程序main方法，至此一个基础java项目搭建完成。
-##### 简单示例
-在搭建理解完整个工程结构之后，我们接下来实现一个简单的查询接口功能  
-1.首先添加web模块依赖，在pom文件里面添加如下代码：  
+1.添加maven模块依赖，项目选择最常用的mysql数据库，在pom文件里面添加如下代码：
 ```
 <dependencies>
-  <!-- 核心模块（默认切必须） -->
+  <!-- mysql驱动 -->
   <dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter</artifactId>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
   </dependency>
-  <!-- 测试模块（默认可去掉） -->
+
+  <!--mybatis-->
   <dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-test</artifactId>
-    <scope>test</scope>
+    <groupId>org.mybatis.spring.boot</groupId>
+    <artifactId>mybatis-spring-boot-starter</artifactId>
+    <version>2.0.1</version>
   </dependency>
-  <!-- web模块 -->
+
+  <!-- 代码格式化工具 -->
   <dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-web</artifactId>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <scope>provided</scope>
   </dependency>
 </dependencies>
 ```
-2.添加完maven依赖之后，这里简单说明下SPring boot建议代码结构示意图   
+PS：lombok依赖主要用于生成Get和Set方法以及基本构造函数，优点是减少代码量提升可阅读性。
+
+2.添加完maven依赖之后，在配置文件application.yml里增加相应配置。
+![mysql配置示例图](http://image.12c3.com/Hexo-Blog/Spring-boot进阶篇-mybatis/mysql配置示例图.png)
 ```
-com
- +- example
-    +- myproject
-        +- Application.java
-        |
-        +- domain
-        |   +- Customer.java
-        |   +- CustomerRepository.java
-        |
-        +- service
-        |   +- CustomerService.java
-        |
-        +- controller
-        |   +- CustomerController.java
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/demo?useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    username: user
+    password: password
+server:
+  port: 10008    
+#mybatis配置，可在主程序入口添加@MapperScan("com.example.demo.mapper.*")代替配置
+mybatis:
+  mapper-locations: classpath:mapping/*Mapper.xml
+  type-aliases-package: com.example.demo.entity  
 ```
-* Application 主程序入口-默认放在项目最上层
-* domain 实体类和数据传输对象
-* service 业务实现代码
-* controller 接口控制器   
+* url 数据库连接，格式为jdbc:mysql://ip:port/name?useSSL=false&useUnicode=true&characterEncoding=UTF-8   
+* username 数据库用户名称   
+* password 数据库用户密码   
+* driver-class-name 驱动名称，这里选择mysql驱动即可    
 
-3.编写简单查询接口  
-在com.example.demo目录下创建controller目录，然后创建TestController.java文件
+3.创建mybatis相关包和文件  
+在com.example.demo目录下创建entity和mapper目录，然后分别创建UserEntity.java、UserMapper.java、UserMapper.xml文件。   
+![mybatis文件示例图](http://image.12c3.com/Hexo-Blog/Spring-boot进阶篇-mybatis/mybatis文件示例图.png)   
+
+UserEntity.java：映射数据表结构，字段与数据库表字段对应。
+
 ```
-package com.example.demo.controller;
+package com.example.demo.entity;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.Data;
+import java.util.Date;
 
-@RestController
-@RequestMapping(value = "test")
-public class TestController {
+@Data
+public class UserEntity {
 
-    @RequestMapping(value = "getName")
-    public Object getName(String name){
-        return "我的名字是："+name;
-    }
+    /**
+     * 主键ID
+     */
+    private Integer id;
+
+    /**
+     * 用户名称
+     */
+    private String name;
+
+    /**
+     * 手机号码
+     */
+    private String mobile;
+
+    /**
+     * 逻辑删除标识 0：未删除 1：已删除
+     */
+    private Integer deleteFlag;
+
+    /**
+     * 创建时间
+     */
+    private Date createTime;
 }
 
 ```
-4.运行示例程序 如图：
-![示例运行图](http://image.12c3.com/Hexo-Blog/Spring-boot入门篇/示例运行图.png)
+数据库建表语句：
+```
+CREATE TABLE `user` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `name` varchar(20) DEFAULT NULL COMMENT '用户名称',
+  `mobile` varchar(20) DEFAULT NULL COMMENT '手机号码',
+  `createTime` datetime DEFAULT NULL COMMENT '创建时间',
+  `deleteFlag` tinyint(1) DEFAULT NULL COMMENT '逻辑删除标识0：未删除1：已删除',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+```
+
+UserMapper.java：@Mapper注解标记对应数据操作映射，一个方法对应一个操作，如：下图中的queryList()方法就是一个查询操作。   
+```
+package com.example.demo.mapper;
+
+import com.example.demo.entity.UserEntity;
+import org.apache.ibatis.annotations.Mapper;
+import java.util.List;
+
+@Mapper
+public interface UserMapper{
+
+    /**
+     * 查询用户列表
+     * @return
+     */
+    List<UserEntity> queryList();
+}
+```
+UserMapper.xml：对应UserMapper.java文件，id和UserMapper.java文件的方法名称对应，映射实际执行SQL语句。  
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.UserMapper">
+    <!--查询user表所有数据-->
+    <select id="queryList" resultType="com.example.demo.entity.UserEntity">
+        select * from user;
+    </select>
+</mapper>
+```
+
+PS：程序打包时默认资源文件在resources文件夹下，而我们的UserMapper.xml文件在src/main/java目录下，所以需要在pom.xml文件声明资源文件打包进去，否则无法加载。当然也可以直接在resources目录下增加xml文件，这样就不需要声明。
+```
+<build>
+  <!--资源文件打包-->
+  <resources>
+    <resource>
+      <directory>src/main/resources</directory>
+      <filtering>true</filtering>
+      <includes>
+        <include>**/*.*</include>
+      </includes>
+    </resource>
+
+    <resource>
+      <directory>src/main/java</directory>
+      <includes>
+        <include>**/*.xml</include>
+      </includes>
+    </resource>
+  </resources>
+  <!--maven打包插件-->
+  <plugins>
+    <plugin>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-maven-plugin</artifactId>
+    </plugin>
+  </plugins>
+</build>
+```
+4.在TestController中添加测试代码：
+![程序运行示例图](http://image.12c3.com/Hexo-Blog/Spring-boot进阶篇-mybatis/程序运行示例图.png)   
 运行成功之后，我们可以在浏览器上测试下接口返回结果 如图:
-![示例运行结果图](http://image.12c3.com/Hexo-Blog/Spring-boot入门篇/示例运行结果图.png)
-5.示例接口代码说明
+![程序测试结果示例图](http://image.12c3.com/Hexo-Blog/Spring-boot进阶篇-mybatis/程序测试结果示例图.png)   
+TestController.java：接口示例代码
 ```
 package com.example.demo.controller;
 
+import com.example.demo.mapper.UserMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -108,21 +194,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "test")//声明接口父类路径，用于归类区分接口类型
 public class TestController {
 
+    //注入dao操作
+    @Autowired
+    private UserMapper userMapper;
+
     @RequestMapping(value = "getName")//声明实际接口路径
     public Object getName(String name){
         //String name 请求参数，不传则返回null
         //Object 返回数据类型，这里测试统一为Object，后续可以指定响应对象
-        return "我的名字是："+name;//返回结果
+        return userMapper.queryList();//返回结果
     }
 }
-
-```
-6.简单配置示例   
-在application.properties里添加如下代码，重新运行程序，请求端口改为10008测试，否则会提示拒绝连接
-```
-#指定请求端口
-server.port=10008
 ```
 ##### 结语
-经过一个简单的示例，大家都应该体验到Spring boot的魅力所在。但是有得必有失，当我们习惯这种模式时，同时也失去了一定学习和深入了解Spring Mvc机制的机会。  
-附：[示例demo源码](http://file.12c3.com/Hexo-Blog/Spring-boot（一）入门篇demo源码.rar)
+一个最基本的Spring boot后端API框架就算搭建完成，接下来我们只需要根据业务添加相应的业务代码即可，你们说是不是觉得很简单呢。  
+附：[示例demo源码](http://file.12c3.com/Hexo-Blog/Spring-boot（二）mybatis篇demo源码.rar)
