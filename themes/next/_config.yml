@@ -370,7 +370,7 @@ disqus:
 
 # changyan
 changyan:
-  enable: true
+  enable: false
   appid: cytTnDBJM
   appkey: fac4e39889f7c705cad40462b3b14076
 
